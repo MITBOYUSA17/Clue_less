@@ -2,7 +2,7 @@ from django.views import View
 from django.http import JsonResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-
+from django.shortcuts import render
 
 class GameView(View):
         def post(self, request):
@@ -165,9 +165,19 @@ class MakeSuggestionView(View):
         # TODO: THIS IS A STUB
         # TODO: THIS IS A STUB
         # TODO: THIS IS A STUB
+        # Notify all clients of the new login
+        channel_layer = get_channel_layer()
+        username = request.user.username 
+        async_to_sync(channel_layer.group_send)(
+            "notifications",
+            {
+                'type': 'notify',
+                'message': f" {username} Made a Suggestion.",
+            }
+        )
 
         return JsonResponse({'message': 'This feature has not been implemented yet.'}, status=200)
-    
+ 
 class MakeAccusationView(View):
 
     def post(self, request) -> JsonResponse:
