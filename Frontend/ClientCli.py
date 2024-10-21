@@ -69,33 +69,56 @@ class cmdClientIF(cmd.Cmd):
         self.client.send(message)
 
     def do_sendToAll(self, message):
-        """Send a message to all connected users: send_to_all <message>"""
+        """Send a message to all connected users: sendToAll <message>"""
         self.client.senToAll(message)
 
     def do_receive(self, arg):
         """Receive messages from the server: receive"""
         self.client.receive(arg)
 
-    def do_joinGameRequest(self, arg):
-        pass
+    def do_createGame(self, ws):
+        """Create a game lobby: createGame"""
+        self.client.createGame()
 
-    def do_startGameRequest(self, arg):
-        pass
+    def do_joinGame(self, arg):
+        """Join a game lobby: joinGame <key>"""
+        self.client.joinGame(arg)
 
+    def do_leaveGame(self, ws):
+        """Leave a game lobby: leaveGame"""
+        self.client.leaveGame()
+
+    def do_startGame(self, ws):
+        """Start a game: leaveGame"""
+        self.client.startGame()
+
+    def do_chooseCharacter(self, arg):
+        """Choose a character: chooseCharacter <character_name>"""
+        self.client.chooseCharacter(arg)
+        
     def do_playerMove(self, arg):
-        pass
+        """Move your piece: playerMove <room>"""
+        self.client.chooseCharacter(arg)
 
     def do_makeSuggestion(self, arg):
-        pass
+        """Make a suggestion: makeSuggestion <perpetrator> <weapon> <room>"""
+        self.client.makeSuggestion(arg)
 
     def do_makeAccusation(self, arg):
-        pass
+        """Make an accusation: makeAccusation <perpetrator> <weapon> <room>"""
+        self.client.makeAccusation(arg)
 
-    def do_EndTurn(self, arg):
-        pass
+    def do_EndTurn(self, ws):
+        """End your turn: endTurn"""
+        self.client.endTurn()
 
-    def do_EndGameEarlyRequest(self, arg):
-        pass
+    def do_EndGameEarlyRequest(self):
+        """End game early request: endGameEarly"""
+        self.client.EndGameEarlyRequest()
+
+    def do_EndGameEarlyVote(self):
+        """Vote to end the game early: endGameEarlyVote"""
+        self.client.EndGameEarlyVote()
 
     def do_exit(self, arg):
         "Exit the CLI: exit"
