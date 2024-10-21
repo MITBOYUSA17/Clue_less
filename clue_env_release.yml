@@ -5,6 +5,9 @@ dependencies:
   - python==3.12.*
   - pip
   - requests
+  - flake8
+  - pytest
+  - pylint
 
   - pip:
       - django>=5.0.1
