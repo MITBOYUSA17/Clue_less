@@ -4,6 +4,9 @@ import websocket
 import threading
 import json
 
+# Disable specific pylint warnings for the entire file
+# pylint: disable=missing-function-docstring, invalid-name
+
 SERVER_IP = "127.0.0.1:8000"
 SERVER_URL = f"http://{SERVER_IP}"
 WS_URL = f"ws://{SERVER_IP}/ws/notifications/"

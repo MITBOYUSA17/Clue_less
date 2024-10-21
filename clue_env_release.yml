@@ -7,6 +7,7 @@ dependencies:
   - requests
   - flake8
   - pytest
+  - pylint
 
   - pip:
       - django>=5.0.1

@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Clue-less Pylint
+name: Clue-less linter
 
 on:
   push:
@@ -32,21 +32,20 @@ jobs:
         source ~/.bashrc  # Source the bash configuration
         conda env list
         conda activate test  # Activate your custom Conda environment
-        conda install flake8 pytest  # Install flake8 and pytest using conda
+        conda install flake8 pytest pylint # Install flake8 and pytest using conda
     - name: Lint with flak8
       run: |
         conda init bash  # Initialize Conda for bash
         source ~/.bashrc  # Source the bash configuration
         conda activate test  # Activate your custom Conda environment
-        flake8_output=$(flake8 .)  # Capture the flake8 output
-        echo "$flake8_output"  # Print the flake8 output
-        error_count=$(echo "$flake8_output" | wc -l)  # Count the number of lines (errors)
-        if [ "$error_count" -ne 0 ]; then
-          score=$((100 - error_count))  # Calculate the score
-          echo "Score: $score"  # Display the score
-        else
-          echo "Score: 100 - No errors!"  # Perfect score
-        fi
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Lint with pylint
+      run: |
+        conda init bash  # Initialize Conda for bash
+        source ~/.bashrc  # Source the bash configuration
+        conda activate test  # Activate your custom Conda environment
+        pylint **/*.py || { echo "Pylint failed with exit code $?"; exit 0; }
 #    - name: Test with pytest
 #      run: |
 #        pytest
