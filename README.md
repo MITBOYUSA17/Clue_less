@@ -10,7 +10,7 @@ JHU Foundations of Software Engineering Team Project
 ### Clone the Repository:
 1. Clone the repository to your local machine using Git.
 
-    eg. git clone git@github.com:jliburd2167/Clue_less.git
+    eg. git clone <git@github.com>:jliburd2167/Clue_less.git
 
 2. Navigate to the root of the directory
 
@@ -63,5 +63,16 @@ Navigate to the root of the project repository and type the following command
 
 2. Once you have created your super user account, launch the server app using the steps outlined above.
 
-3. Open Your Web Browser: Navigate to http://127.0.0.1:8000/admin/.
+3. Open Your Web Browser: Navigate to <http://127.0.0.1:8000/admin/>.
 
+## Run Test Cases
+
+1. To run the Test Cases associated with the project navigate to the root project directory.
+2. Enter the command:
+```bash
+python3 manage.py test <module>
+```
+
+### References:
+[Django Testing Overview](https://docs.djangoproject.com/en/5.1/topics/testing/overview/)
+[Django Testing Examples](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Testing)
