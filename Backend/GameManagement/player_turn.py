@@ -6,6 +6,7 @@ class Player_Turn():
     p: Player
     isActive: bool
     hasMadeAccusation: bool
+    hasMadeSuggestion: bool
     hasEnteredRoom: bool
     hasMoved: bool
 
@@ -13,6 +14,7 @@ class Player_Turn():
         p = player
         self.isActive = False
         self.hasMadeAccusation = False
+        self.hasMadeSuggestion = False
         self.hasEnteredRoom = False
         self.hasMoved = False
 
@@ -20,7 +22,7 @@ class Player_Turn():
     def get_valid_actions(self):
         return_list = []
         self.isActive = True
-        if self.hasEnteredRoom:
+        if self.hasEnteredRoom and not self.hasMadeSuggestion:
             return_list.append(Suggestion(self.p, self))
         if not self.hasMadeAccusation:
             return_list.append(Accusation(self.p, self))

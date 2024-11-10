@@ -9,9 +9,6 @@ from Backend.GameManagement.space import space
 class Actions():
     p: Player
     pt: Player_Turn
-    all_characters = {"Miss Scarlet", "Colonel Mustard", "Professor Plum", "Mr. Green", "Mrs. Peacock", "Mrs. White"}
-    all_weapons = {"Candlestick", "Dagger", "Revolver", "Lead Pipe", "Wrench", "Rope"}
-    all_rooms = {"Hall", "Lounge", "Dining Room", "Kitchen", "Ballroom", "Conservatory", "Billiard Room", "Library", "Study"}
 
     def __init__(self, player: Player, playerTurn: Player_Turn):
         p = player
@@ -78,7 +75,7 @@ class Suggestion(Actions):
 
     def validate(self):
         if self.pt.hasEnteredRoom:
-            if not self.pt.hasMadeAccusation:
+            if not self.pt.hasMadeAccusation and not self.pt.hasMadeSuggestion:
                 return True
         return False
 
@@ -97,6 +94,8 @@ class Suggestion(Actions):
             # output list of player's cards that match suggestion
             # have them select one
 
+        self.pt.hasMadeSuggestion = True
+
 
     def create_suggestion(self, suspect: str, weap: str, room_suggest: str):
         # output to GUI/client list of options for suspect, have them choose one
@@ -110,6 +109,8 @@ class Suggestion(Actions):
         # output to GUI/client list of options for room, have them choose one
 
         self.room = selected_room
+
+        # move player and weapon tokens to the room suggested
 
 
 class Move(Actions):
@@ -126,6 +127,14 @@ class Move(Actions):
 
         # output possible moves
         # have player select a move
+        selected_destination
+
+        if(selected_destination.is_room()):
+            self.pt.hasEnteredRoom = True
+
+        # broadcast move
+
+
 
 
 
