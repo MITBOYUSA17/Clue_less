@@ -18,6 +18,8 @@ class Hand():
     def add_card(self, card: Card):
         """Add a card to the hand."""
         if isinstance(card, Card):
+            if card in self._cards:
+                raise ValueError(f"The card '{card._name}' is already in the hand.")
             self._cards.append(card)
         else:
             raise ValueError("Must add an instance of Card.")
@@ -29,7 +31,7 @@ class Hand():
         else:
             raise ValueError("Card not found in the hand.")
 
-    def get_deck(self) -> list:
+    def get_hand(self) -> list:
         """Return the current state of the hand."""
         return self._cards
 
@@ -53,29 +55,18 @@ if __name__ == "__main__":
     hand = Hand()
 
     # Create some cards
-    card1 = Card("Jamar", CardType.SUSPECT)
-    card2 = Card("Kitchen", CardType.ROOM)
-    card3 = Card("Golden Caribbean Macheté", CardType.WEAPON)
+    card1 = Card(Card.VALID_SUSPECTS[2], CardType.SUSPECT)
+    card2 = Card(Card.VALID_ROOMS[4], CardType.ROOM)
+    card3 = Card(Card.VALID_WEAPONS[1], CardType.WEAPON)
 
     # Add cards to the hand
     hand.add_card(card1)
     hand.add_card(card2)
     hand.add_card(card3)
 
-    # Display the hand
-    print("Hand before shuffling:", hand.get_deck())
-
-    # Shuffle the hand
-    hand.shuffle()
-    print("Hand after shuffling:", hand.get_deck())
-
-    # Deal a card
-    dealt_card = hand.deal()
-    print("Dealt card:", dealt_card)
-
     # Display the hand after dealing
-    print("Hand after dealing a card:", hand.get_deck())
+    print("Hand after dealing a card:", hand.get_hand())
 
     # Remove a card
     hand.remove_card(card2)
-    print("Hand after removing a card:", hand.get_deck())
+    print("Hand after removing a card:", hand.get_hand())
