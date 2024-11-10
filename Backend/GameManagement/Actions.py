@@ -92,7 +92,17 @@ class Suggestion(Actions):
             nextPlayer = next(turnList_iter)
             # ask player to disprove
             # output list of player's cards that match suggestion
-            # have them select one
+            disproveCards = []
+            for card in self.p.playerHand:
+                curr_card = card.get_name()
+                if curr_card == suspect or curr_card == weapon or curr_card == room:
+                    disproveCards.append(curr_card)
+
+            if disproveCards is empty:
+                return False
+            else:
+                # have them select one
+                # wait for them to accept then broadcast event (not card)
 
         self.pt.hasMadeSuggestion = True
 
