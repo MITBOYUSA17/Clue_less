@@ -17,23 +17,60 @@ class CardType(Enum):
 
 
 class Card:
+    """
+    Class object to represent valid card types in the game clue-less.
+
+    Attributes:
+        VALID_SUSPECTS: List of valid suspect
+        VALID_WEAPONS: List of valid weapons
+        VALID_ROOMS: List of valid rooms
+    """
+    VALID_SUSPECTS = [
+        "Miss Scarlet",
+        "Professor Plum",
+        "Mrs. Peacock",
+        "Mr. Green",
+        "Colonel Mustard",
+        "Mrs. White"
+        ]
+
+    VALID_WEAPONS = [
+        "Candlestick",
+        "Dagger",
+        "Lead Pipe",
+        "Revolver",
+        "Rope",
+        "Wrench"
+        ]
+
+    VALID_ROOMS = [
+        "Ballroom",
+        "Kitchen",
+        "Library",
+        "Study",
+        "Hall",
+        "Lounge",
+        "Dining Room",
+        "Conservatory",
+        "Billiard Room"
+        ]
+
     def __init__(self, name: str, card_type: CardType):
+        if card_type == CardType.SUSPECT and name not in self.VALID_SUSPECTS:
+            raise ValueError(f"{name} is not a valid suspect.")
+        elif card_type == CardType.WEAPON and name not in self.VALID_WEAPONS:
+            raise ValueError(f"{name} is not a valid weapon.")
+        elif card_type == CardType.ROOM and name not in self.VALID_ROOMS:
+            raise ValueError(f"{name} is not a valid room.")
+
         self._name = name
         self._card_type = card_type
 
     def get_name(self) -> str:
         return self._name
 
-    def set_name(self, value: str):
-        self._name = value
-
     def get_card_type(self) -> CardType:
         return self._card_type
-
-    def set_card_type(self, value: CardType):
-        if not isinstance(value, CardType):
-            raise ValueError("card_type must be an instance of CardType Enum.")
-        self._card_type = value
 
     # Compare function
     def __eq__(self, other) -> bool:
@@ -58,15 +95,15 @@ class Card:
         return f"name='{self._name}', card_type={self._card_type}"
 
 if __name__ == "__main__":
-    card1 = Card("Colonel Mustard", CardType.SUSPECT)
-    card2 = Card("Library", CardType.ROOM)
-    card3 = Card("Golden Caribbean Macheté", CardType.WEAPON)
+    card1 = Card(Card.VALID_SUSPECTS[2], CardType.SUSPECT)
+    card2 = Card(Card.VALID_ROOMS[4], CardType.ROOM)
+    card3 = Card(Card.VALID_WEAPONS[1], CardType.WEAPON)
 
     print(card1)  # Output: Card(name="Colonel Mustard", card_type=CardType.SUSPECT)
     print(card2)  # Output: Card(name="Library", card_type=CardType.ROOM)
     print(card3)  # Output: Card(nasm="Golden Caribbean Macheté", card_type=CardType.Weapon)
 
     # Comparing cards
-    card4 = Card("Colonel Mustard", CardType.SUSPECT)
+    card4 = Card(Card.VALID_SUSPECTS[2], CardType.SUSPECT)
     print(card1 == card4)  # Output: True
     print(card1 == card2)  # Output: False
