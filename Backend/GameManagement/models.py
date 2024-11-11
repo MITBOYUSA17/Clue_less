@@ -60,9 +60,9 @@ class GameRoom(models.Model):
         passcode = "".join(random.choice(characters, k=max_len))
         return passcode
 
-    def set_game_status(status_id):
-        pass
-    def set_game_status(status_name):
+    def set_game_status(status_id) -> bool:
+        
+    def set_game_status(status_name) -> bool:
         pass
     def get_game_statues(self) -> List[str]:
         pass
@@ -70,8 +70,10 @@ class GameRoom(models.Model):
     def get_game_status(self, status_id: int) -> str:
         pass
 
-    def set_max_players(self):
-        pass
+    def set_max_players(self, max_players: int):
+        self.max_players = max_players
+        self.save()
+        
 
     def add_to_player_count(self):
         pass
@@ -108,7 +110,7 @@ class GameStatus(models.Model):
 
 
 class UserStats(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_stats")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user_stats", unique=True, primary_key=True)
     total_games = models.PositiveIntegerField(default=0)
     wins = models.PositiveIntegerField(default=0)
     losses = models.PositiveIntegerField(default=0)
@@ -153,6 +155,5 @@ class UserStats(models.Model):
         self.total_games += 1
         self.save()
     
-
     def __str__(self):
         return f"Statistics for {self.user.username}"

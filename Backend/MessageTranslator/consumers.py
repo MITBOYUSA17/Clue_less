@@ -144,3 +144,6 @@ class GameRoomConsumer(AsyncWebsocketConsumer):
         
     async def disconnect(self):
         await self.remove_from_groups()
+
+class GameRoomChat(AsyncWebsocketConsumer):
+    pass

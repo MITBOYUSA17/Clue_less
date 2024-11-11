@@ -1,6 +1,17 @@
 # May want to hide the data
 class gameProcessor():
     def __init__(self):
+        self.round_counter = 0
+        self.turn_order = []
+        self.state = 
+        
+
+
+
+
+
+class gameProcessor():
+    def __init__(self):
         self.server_ip = ""
         self.server_port = 0
         self.game_id = ""
