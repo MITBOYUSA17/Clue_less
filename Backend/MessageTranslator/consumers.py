@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
+from GameManagement.models import GameRoom
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     """
@@ -63,3 +64,83 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             # Log the error or handle it appropriately
             print(f"Error while sending notification: {e}")
+
+
+class GameRoomConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user = self.scope["user"]
+        # retrieves the user associated with the request
+        self.game_id = self.scope["url_route"]["kwargs"]["game_id"]
+        # retrieves the game_id provided with the request
+        if self.user.is_authenticated:
+            # verifies that the user sending the request is authenticated 
+            # via Django back-end authentication mechanisms
+            self.game_room = await self.get_room()
+            # attempts to get the game room id associates with users request
+            if self.game_room is not None:
+            # ASSERT: The game room id provided is in the db.
+                if self.can_join():
+                    self.channel_layer = get_channel_layer()  # Get the channel layer
+                    await self.channel_layer.group_add("gamerooms", self.game_id)  # Join the notifications group
+                    await self.accept()  # Accept the WebSocket connection
+                    await self.send(f"Connected to game room {self.game_id}\nStatus {self.game_room.status}\nPlayer Count: {self.game_room.player_count}")
+                else:
+                    await self.close()
+            else:
+                await self.send(f"Game room '{self.game_id} could not be found.")
+                # executes custom function that sends the error message to the Client and Server.
+                await self.close()
+                # closes the connection due to failure
+        else:
+            await self.send("User authentication failed")
+            await self.close()
+            # closes the connection due to failure
+    async def can_join(self) -> bool:
+        can_join = False
+        if self.is_space():
+            if self.is_room_available():
+                if self.is_valid_passcode():
+                    can_join = True
+                else:
+                    await self.send(f"Invalid room passcode for {self.game_room.game_id}")
+            
+            else:
+                await self.send(f"The Room is {self.game_room.status}, and cannot be joined.")
+        
+        else:
+            await self.send(f"The Room is full, players: {self.game_room.player_count}/{self.game_room.max_players}")
+        return can_join
+
+    async def is_valid_passcode(self) -> bool:
+        is_valid = True
+        if self.game_room.is_private:
+            passcode = self.scope.get("query_string").get("passcode")
+            is_valid = passcode == self.game_room.passcode
+        return is_valid
+            
+    async def is_room_available(self) -> bool:
+        return self.game_room.status == "Open"
+
+    async def is_space(self) -> bool:
+        return self.game_room.player_count < self.game_room.max_players
+    
+    async def send_welcome_msg(self):
+        data = json.dumps({
+            "message": f"Welcome to game room {self.game_id}.",
+            "status": self.game_room.status,
+            "player_count": self.game_room.player_count
+        })
+        await self.send(text_data=data)
+
+    async def add_to_groups(self):
+        await self.channel_layer.group_add(f"gameroom_{self.game_id}", self.channel_name)
+
+
+    async def get_room(self) -> GameRoom | None:
+        try:
+            return GameRoom.objects.get(game_id=self.game_id)
+        except GameRoom.DoesNotExist:
+            return None
+        
+    async def disconnect(self):
+        await self.remove_from_groups()
