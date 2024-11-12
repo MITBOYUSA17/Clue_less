@@ -124,8 +124,6 @@ class Suggestion(Actions):
 
 
 class Move(Actions):
-    Space destination
-    Space currPos
 
     def validate(self):
         if self.p.get_valid_moves():
@@ -136,10 +134,18 @@ class Move(Actions):
         moves_list = self.p.get_valid_moves()
 
         # output possible moves
+        adj = self.p.currLocation.get_adjacent_spaces()
+
+        possible_dest = []
+        # check if adjacent spaces are empty
+        for sp in adj:
+            if sp.get_player_count() == 0:
+                possible_dest.append(sp)
+
         # have player select a move
         selected_destination
 
-        if(selected_destination.is_room()):
+        if(selected_destination.get_space_type() == ROOM):
             self.pt.hasEnteredRoom = True
 
         # broadcast move
