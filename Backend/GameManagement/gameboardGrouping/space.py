@@ -56,6 +56,9 @@ class Space:
     def adjacent_spaces(self) -> List[Space]:
         """Returns list of adjacent spaces."""
         return list(self._adjacent_spaces)
+    
+    def get_space_type(self) -> int:
+        return self.space_type
 
     def add_adjacent_space(self, space: Space) -> None:
         """
@@ -96,6 +99,7 @@ class Space:
         if player in self._players:
             raise ValueError(f"Player {player} is already in this space")
         self._players.add(player)
+        self.player_count += 1
 
     def remove_player(self, player: Player) -> None:
         """
@@ -218,6 +222,7 @@ class Hallway(Space):
                 "hallway is occupied"
             )
         super().add_player(player)
+        super().player_count += 1
 
     def connected_rooms(self) -> List[str]:
         """Returns names of rooms this hallway connects."""
