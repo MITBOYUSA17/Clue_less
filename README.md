@@ -69,9 +69,17 @@ Navigate to the root of the project repository and type the following command
 
 1. To run the Test Cases associated with the project navigate to the root project directory.
 2. Enter the command:
+
+### Django Test
 ```bash
 python3 manage.py test <module>
 ```
+### Pytest
+```bash
+python3 pytest
+```
+
+note: use the "-s" in pytest for debugging printouts
 
 ### References:
 [Django Testing Overview](https://docs.djangoproject.com/en/5.1/topics/testing/overview/)
