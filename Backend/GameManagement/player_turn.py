@@ -35,4 +35,8 @@ class Player_Turn():
 
     def end_turn(self):
         self.isActive = False
+        self.hasMadeAccusation = False
+        self.hasMadeSuggestion = False
+        self.hasEnteredRoom = False
+        self.hasMoved = False
 

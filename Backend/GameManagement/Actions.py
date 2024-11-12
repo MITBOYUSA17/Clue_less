@@ -80,6 +80,10 @@ class Suggestion(Actions):
         return False
 
     def perform_action(self):
+        # prompt for susepct, weapon, room
+
+        self.create_suggestion(suspect, weap, room_suggest)
+
         disproveFinished = False
 
         turnList = Backend.GameManagement.GameProcessor.turnOrder
@@ -95,7 +99,7 @@ class Suggestion(Actions):
             disproveCards = []
             for card in self.p.playerHand:
                 curr_card = card.get_name()
-                if curr_card == suspect or curr_card == weapon or curr_card == room:
+                if curr_card == self.suspect or curr_card == self.weapon or curr_card == self.room:
                     disproveCards.append(curr_card)
 
             if disproveCards is empty:
@@ -110,15 +114,15 @@ class Suggestion(Actions):
     def create_suggestion(self, suspect: str, weap: str, room_suggest: str):
         # output to GUI/client list of options for suspect, have them choose one
 
-        self.suspect = selected_suspect
+        self.suspect = suspect
 
         # output to GUI/client list of options for weapon, have them choose one
 
-        self.weapon = selected_weapon
+        self.weapon = weap
 
         # output to GUI/client list of options for room, have them choose one
 
-        self.room = selected_room
+        self.room = room_suggest
 
         # move player and weapon tokens to the room suggested
 
@@ -139,7 +143,7 @@ class Move(Actions):
         possible_dest = []
         # check if adjacent spaces are empty
         for sp in adj:
-            if sp.get_player_count() == 0:
+            if sp.is_empty():
                 possible_dest.append(sp)
 
         # have player select a move
@@ -147,6 +151,9 @@ class Move(Actions):
 
         if(selected_destination.get_space_type() == ROOM):
             self.pt.hasEnteredRoom = True
+
+        selected_destination.add_player(self.p)
+        self.p.currLocation.remove_player(self.p)
 
         # broadcast move
 
