@@ -2,35 +2,38 @@
 class ClientSession():
     pass
 
+    def set_cookies():
+        pass
+    
     def register():
         pass
 
     def login():
         pass
 
-    def createGame():
+    def create_game():
         pass
 
-    def leaveGame():
+    def leave_game():
         pass
 
-    def startGame():
+    def start_game():
         pass
 
-    def chooseCharacter():
+    def choose_character():
         pass
 
-    def playerMove():
+    def player_move():
         pass
 
-    def makeSuggestion():
+    def make_suggestion():
         pass
 
-    def makeAccussation():
+    def make_accusation():
         pass
 
-    def endTurn():
+    def end_turn():
         pass
 
-    def endGameEarlyRequest():
+    def end_game_early_request():
         pass 

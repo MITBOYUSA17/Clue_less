@@ -1,144 +1,227 @@
 from enum import Enum, auto
-from typing import List
+from typing import List, Optional, Union, Set
+from player import Player
+
 
 class SpaceType(Enum):
+    """Represents different types of spaces on the game board."""
     ROOM = auto()
     CORNER_ROOM = auto()
     HALLWAY = auto()
-    def __str__(self) -> str:
-        return self.name.replace("_",' ').title()
 
-class Space():
-    def __init__(self, name: str = ""):
-        self.space_name: name
-        self.space_type: SpaceType = None
-        self.players: List[Player] = []
-        self.adjacent_spaces: List[Space] = []
+    def __str__(self) -> str:
+        return self.name.replace('_', ' ').title()
+
+
+class Space:
+    """Base class for all spaces on the game board."""
     
+    def __init__(self, name: str = ""):
+        self.name: str = name
+        self.space_type: SpaceType = None
+        self._players: Set[Player] = set()  # Using set for O(1) lookups
+        self._adjacent_spaces: Set[Space] = set()  # Using set for O(1) lookups
+        self.player_count: int = 0
+
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other,Space):
+        """Two spaces are equal if they have the same type and either same name (rooms) 
+        or same adjacent spaces (hallways)."""
+        if not isinstance(other, Space):
             return False
         if self.space_type != other.space_type:
             return False
         if self.space_type == SpaceType.HALLWAY:
-            return self.adjacent_spaces == other.adjacent_spaces
-        
+            return self._adjacent_spaces == other._adjacent_spaces
         return self.name == other.name
+
+    def __hash__(self) -> int:
+        """Hash based on space type and either name or adjacent spaces."""
+        if self.space_type == SpaceType.HALLWAY:
+            # Sort room names for consistent hashing
+            connected_rooms = tuple(sorted(
+                space.name for space in self._adjacent_spaces 
+                if space.space_type != SpaceType.HALLWAY
+            ))
+            return hash((self.space_type, connected_rooms))
+        return hash((self.space_type, self.name))
+
+    def player_count(self) -> int:
+        """Returns number of players in the space."""
+        return self.player_count
+
+    def players(self) -> List[Player]:
+        """Returns list of players in the space."""
+        return list(self._players)
+
+    def adjacent_spaces(self) -> List[Space]:
+        """Returns list of adjacent spaces."""
+        return list(self._adjacent_spaces)
+
+    def add_adjacent_space(self, space: Space) -> None:
+        """
+        Adds a space to adjacent spaces and creates reciprocal connection.
         
-    
-    def get_space_name(self) -> str:
-        return self.space_name
-    
-    def set_space_name(self, name: str):
-        self.space_name = name
-    
-    def get_space_type(self) -> SpaceType:
-        return self.space_type
-    
-    def get_space_type_name(self) -> str:
-        return str(self.space_type)
+        Args:
+            space: Space to add as adjacent
+            
+        Raises:
+            ValueError: If space is invalid or would create invalid connection
+        """
+        if space is self:
+            raise ValueError("Space cannot be adjacent to itself")
+            
+        if self.space_type == SpaceType.HALLWAY:
+            # Validate hallway connections
+            room_connections = sum(1 for s in self._adjacent_spaces 
+                                 if s.space_type != SpaceType.HALLWAY)
+            if room_connections >= 2:
+                raise ValueError("Hallway cannot connect to more than two rooms")
+            if space.space_type == SpaceType.HALLWAY:
+                raise ValueError("Hallways cannot connect to other hallways")
+
+        # Add bidirectional connection
+        self._adjacent_spaces.add(space)
+        space._adjacent_spaces.add(self)
+
+    def add_player(self, player: Player) -> None:
+        """
+        Adds a player to the space.
         
-    def set_space_type(self, space_type: SpaceType):
-        self.space_type = space_type
-    
-    def get_player_count(self) -> int:
-        return self.players.count()
-    
-    
-    def add_adjacent_space(self, space: Space):
-        self.adjacent_spaces.append(space)
+        Args:
+            player: Player to add
+            
+        Raises:
+            ValueError: If player is already in space
+        """
+        if player in self._players:
+            raise ValueError(f"Player {player} is already in this space")
+        self._players.add(player)
 
-    
-    def remove_adjacent_space(self,space: Space):
-        self.adjacent_spaces.remove(space)
+    def remove_player(self, player: Player) -> None:
+        """
+        Removes a player from the space.
+        
+        Args:
+            player: Player to remove
+            
+        Raises:
+            ValueError: If player is not in space
+        """
+        if player not in self._players:
+            raise ValueError(f"Player {player} is not in this space")
+        self._players.remove(player)
 
-    def remove_adjacent_space(self,index: int):
-        adjacent_spaces_len = len(self.adjacent_spaces)
-        if index < adjacent_spaces_len and index >= 0:
-            self.adjacent_spaces.remove(index)
-    
-    def get_adjacent_spaces():
-        return self.adjacent_spaces
-    
-
-    def getAdjacentSpace(name: str):
-        pass
-
-    def removeAdjacentSpace(name: str):
-        pass
-
-    def getAdjacentSpaces():
-        return self.adjacent_spaces
-
-    def setAdjacentSpaces(spaces: List[Space]):
-        self.adjacent_spaces = spaces
-
-   
-    def addPlayer():
-        self.player_count + 1
-    
-    def setPlayer(players: List[Player]):
-        pass
-
-    def removePlayer() -> Player:
-        pass
-
-    def getPlayer():
-        pass
-
-    def 
-
+    def clear_players(self) -> None:
+        """Removes all players from the space."""
+        self._players.clear()
 
 class Room(Space):
-    def __init__(self):
-        self.secret_passages = []
-        self.weapons = []
-        self.setSpaceType(SpaceType.Room)
+    """Represents a room in the game."""
     
-    def addSecretPassage(secret_passage: Hallway):
-        pass
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.space_type = SpaceType.ROOM
+        self._secret_passages: Set[Room] = set()
+        self._weapons: Set[Weapon] = set()
 
-    def setSecretPassages(secrets: Hallway):
-        pass
+    def secret_passages(self) -> List[Room]:
+        """Returns list of rooms connected by secret passages."""
+        return list(self._secret_passages)
 
-    def getSecretPassages():
-        return self.secret_passages
+    def weapons(self) -> List[Weapon]:
+        """Returns list of weapons in the room."""
+        return list(self._weapons)
 
-    def isSecretPassage():
-        if self.secret_passages:
-
-    def addWeapon(weapon: Weapon):
-        self.weapons.append(weapon)
-
-    def removeWeapon(name: str) -> Weapon:
-        pass
-
-    def removeWeapon(index: int) -> Weapon:
-        pass
-
-    def setWeapons(weapons: List[Weapon]):
-        self.weapons = weapons
+    def add_secret_passage(self, room: Room) -> None:
+        """
+        Adds a secret passage to another room.
         
+        Args:
+            room: Room to connect via secret passage
+            
+        Raises:
+            ValueError: If connection would be invalid
+        """
+        if not isinstance(room, Room):
+            raise ValueError("Secret passages can only connect to rooms")
+        if room is self:
+            raise ValueError("Cannot create secret passage to self")
+        
+        self._secret_passages.add(room)
+        room._secret_passages.add(self)
+
+    def add_weapon(self, weapon: Weapon) -> None:
+        """Adds a weapon to the room if not already present."""
+        self._weapons.add(weapon)
+
+    def remove_weapon(self, weapon: Weapon) -> None:
+        """
+        Removes a weapon from the room.
+        
+        Raises:
+            ValueError: If weapon is not in room
+        """
+        if weapon not in self._weapons:
+            raise ValueError(f"Weapon {weapon} is not in this room")
+        self._weapons.remove(weapon)
+
+    def has_secret_passage(self) -> bool:
+        """Returns whether room has any secret passages."""
+        return bool(self._secret_passages)
+
 
 class CornerRoom(Room):
-    def __init__(self):
+    """Represents a corner room in the game."""
+    
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.space_type = SpaceType.CORNER_ROOM
 
-        self.setSpaceType(SpaceType.CornerRoom)
 
 class Hallway(Space):
-
-    def __init__(self):
-        self.setSpaceType(SpaceType.Hallway)
-        self.must_leave = False
-        self.is_empty = True
+    """
+    Represents a hallway space in the game.
+    Can only hold one player and must connect exactly two rooms.
+    """
     
-    def isEmpty() -> bool:
-        return self.is_empty
+    def __init__(self):
+        super().__init__("")  # Hallways don't need names
+        self.space_type = SpaceType.HALLWAY
+        self._must_leave = False
 
-# maybe all it player must move
-    def playerMustLeave() -> bool:
-        return self.must_leave 
+    def is_empty(self) -> bool:
+        """Returns whether hallway has no players."""
+        return self.player_count == 0
 
-    def addPlayerToSpace():
-        if self.isEmpty():
-            pass
+    def must_leave(self) -> bool:
+        """Returns whether players must leave this hallway."""
+        return self._must_leave
+
+    def set_must_leave(self, value: bool) -> None:
+        self._must_leave = value
+
+    def add_player(self, player: Player) -> None:
+        """
+        Adds a player to the hallway if empty.
+        
+        Args:
+            player: Player to add
+            
+        Raises:
+            ValueError: If hallway is occupied
+        """
+        if not self.is_empty:
+            connected_rooms = [s.name for s in self._adjacent_spaces 
+                             if s.space_type != SpaceType.HALLWAY]
+            raise ValueError(
+                f"Cannot add player to hallway between {' and '.join(connected_rooms)}: "
+                "hallway is occupied"
+            )
+        super().add_player(player)
+
+    def connected_rooms(self) -> List[str]:
+        """Returns names of rooms this hallway connects."""
+        return sorted(
+            space.name for space in self._adjacent_spaces 
+            if space.space_type != SpaceType.HALLWAY
+        )

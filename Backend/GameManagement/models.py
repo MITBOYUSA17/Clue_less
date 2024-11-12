@@ -61,6 +61,7 @@ class GameRoom(models.Model):
         return passcode
 
     def set_game_status(status_id) -> bool:
+        pass
         
     def set_game_status(status_name) -> bool:
         pass
